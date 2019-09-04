@@ -142,20 +142,20 @@ def main():
         blueprint_library = world.get_blueprint_library()
 
         vehicle = world.spawn_actor(
-            random.choice(blueprint_library.filter('vehicle.*')),
+            random.choice(blueprint_library.filter('vehicle.audi*')),
             start_pose)
         actor_list.append(vehicle)
         vehicle.set_simulate_physics(False)
 
         camera_rgb = world.spawn_actor(
             blueprint_library.find('sensor.camera.rgb'),
-            carla.Transform(carla.Location(x=-5.5, z=2.8), carla.Rotation(pitch=-15)),
+            carla.Transform(carla.Location(x=1.6, z=1.7)),#carla.Transform(carla.Location(x=-5.5, z=2.8), carla.Rotation(pitch=-15)),
             attach_to=vehicle)
         actor_list.append(camera_rgb)
 
         camera_semseg = world.spawn_actor(
             blueprint_library.find('sensor.camera.semantic_segmentation'),
-            carla.Transform(carla.Location(x=-5.5, z=2.8), carla.Rotation(pitch=-15)),
+            carla.Transform(carla.Location(x=1.6, z=1.7)),#carla.Transform(carla.Location(x=-5.5, z=2.8), carla.Rotation(pitch=-15)),
             attach_to=vehicle)
         actor_list.append(camera_semseg)
 
@@ -173,7 +173,11 @@ def main():
                 waypoint = random.choice(waypoint.next(1.5))
                 vehicle.set_transform(waypoint.transform)
 
+                image_rgb.save_to_disk('_out/%08d' % image_rgb.frame)
+                image_semseg.save_to_disk('_out_seg/%08d' % image_semseg.frame)
+
                 image_semseg.convert(carla.ColorConverter.CityScapesPalette)
+                image_semseg.save_to_disk('_out_seg_city/%08d' % image_semseg.frame)
                 fps = round(1.0 / snapshot.timestamp.delta_seconds)
 
                 # Draw the display.
